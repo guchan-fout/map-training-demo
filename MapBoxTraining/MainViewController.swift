@@ -90,6 +90,7 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func askForLocationPermisson() {
+        locationManager.delegate = self
         let authorizationStatus: CLAuthorizationStatus
 
         if #available(iOS 14, *) {
@@ -137,11 +138,23 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 
-
-
-extension MapViewController: CLLocationManagerDelegate {
-    
-    
+extension MainViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+            switch status {
+            case .notDetermined:
+                print("user haven't decided yet")
+            case .denied:
+                print("user denied, need to change it from setting")
+            case .restricted:
+                print("this device's location service is restricted")
+            case .authorizedAlways:
+                print("user permitted always use")
+            case .authorizedWhenInUse:
+                print("user permitted when in use")
+            default:
+                break
+        }
+    }
 }
 
 
