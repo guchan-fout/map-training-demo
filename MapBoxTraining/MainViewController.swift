@@ -6,15 +6,17 @@
 //
 
 import UIKit
+import CoreLocation
 
 class MainViewController: UIViewController  {
     
+    let locationManager = CLLocationManager()
     let tableView = UITableView()
     let titleLable = UILabel()
     var safeArea: UILayoutGuide!
     let cellID = "cell"
     
-    var characters = ["Open a map", "", "", ""]
+    var characters = ["Ask for Location permisson", "Open a map", "", ""]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +36,6 @@ class MainViewController: UIViewController  {
         titleLable.text = "Choose the option"
         titleLable.textAlignment = .center
         titleLable.backgroundColor = .brown
-        print(view.safeAreaInsets.top)
         titleLable.frame = CGRect(x: view.safeAreaInsets.left, y: view.safeAreaInsets.top, width: view.bounds.width, height: 50)
         view.addSubview(titleLable)
     }
@@ -74,17 +75,73 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
         
         switch indexPath.row {
         case 0:
+            print("\(#function) ask for permission")
+            askForLocationPermisson()
+        case 1:
             print("\(#function) open a map")
             let mapVC = MapViewController()
             mapVC.modalPresentationStyle = .fullScreen
             self.navigationController?.pushViewController(mapVC, animated: true)
-            //self.navigationController?.present(mapVC, animated: true, completion: nil)
         default:
             print("\(#function) no options")
         }
         
         
     }
+    
+    func askForLocationPermisson() {
+        let authorizationStatus: CLAuthorizationStatus
+
+        if #available(iOS 14, *) {
+            authorizationStatus = locationManager.authorizationStatus
+        } else {
+            authorizationStatus = CLLocationManager.authorizationStatus()
+        }
+        
+        print("authorizationStatus: \(authorizationStatus.rawValue)")
+        
+        switch authorizationStatus {
+        case .denied:
+            print("denied")
+            //requst permission dialog will not work
+            showAlert()
+        case .authorizedAlways, .authorizedWhenInUse:
+            print("Already have permission")
+        default:
+            locationManager.requestWhenInUseAuthorization()
+    
+            break
+        }
+    }
+    
+    func showAlert() {
+        let alert = UIAlertController(title: "Please set On for permisson", message: "", preferredStyle: .actionSheet)
+        
+        let yesAction = UIAlertAction(title: "OK", style: .default) { action in
+            print("tapped yes")
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+        }
+        
+        let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel) { action in
+            print("tapped cancel")
+            alert.dismiss(animated: true, completion:  nil)
+        }
+        
+        alert.addAction(yesAction)
+        alert.addAction(cancelAction)
+        
+        // UIAlertControllerの表示
+        present(alert, animated: true, completion: nil)
+
+    }
+}
+
+
+
+
+extension MapViewController: CLLocationManagerDelegate {
+    
+    
 }
 
 

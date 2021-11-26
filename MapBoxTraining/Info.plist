@@ -5,14 +5,14 @@
 	<key>MBXAccessToken</key>
 	<string>pk.eyJ1IjoiY2hhbi1ndSIsImEiOiJja3ZjMGt0dXFhc3RhMndxNnR3M3o2bmgzIn0.iUfIljSfjBVpGu-FkbAIEw</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your precise location is used to calculate turn-by-turn directions, show your location on the map, and help improve the map.</string>
+	<string>Show me the money</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
-		<dict>
-  			<key>LocationAccuracyAuthorizationDescription</key>
-  			<string>Please enable precise location. Turn-by-turn directions only work when precise location data is available.</string>
-  			<key>CustomKey</key>
-    		<string>We temporarily require your precise location for an optimal experience.</string>
-		</dict>
+	<dict>
+		<key>LocationAccuracyAuthorizationDescription</key>
+		<string>Please enable precise location. Turn-by-turn directions only work when precise location data is available.</string>
+		<key>CustomKey</key>
+		<string>We temporarily require your precise location for an optimal experience.</string>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
