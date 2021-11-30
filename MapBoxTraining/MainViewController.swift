@@ -116,7 +116,7 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func showAlert() {
-        let alert = UIAlertController(title: "Please set On for permisson", message: "", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Please enable the location permisson", message: "", preferredStyle: .actionSheet)
         
         let yesAction = UIAlertAction(title: "OK", style: .default) { action in
             print("tapped yes")

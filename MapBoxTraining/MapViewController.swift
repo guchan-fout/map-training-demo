@@ -11,41 +11,131 @@ import MapboxMaps
 class MapViewController: UIViewController {
     
     internal var mapView: MapView!
+    internal let toggleAccuracyRadiusButton: UIButton = UIButton(frame: .zero)
+    internal var showsAccuracyRing: Bool = false {
+        didSet {
+            syncPuckAndButton()
+        }
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        // Do any additional setup after loading the view.
-        
-        
-        let myResourceOptions = ResourceOptions(accessToken: "pk.eyJ1IjoiY2hhbi1ndSIsImEiOiJja3ZjMGt0dXFhc3RhMndxNnR3M3o2bmgzIn0.iUfIljSfjBVpGu-FkbAIEw")
-        let myMapInitOptions = MapInitOptions(resourceOptions: myResourceOptions)
-        mapView = MapView(frame: view.bounds, mapInitOptions: myMapInitOptions)
+
+        mapView = MapView(frame: view.bounds)
         mapView.location.delegate = self
-        mapView.location.requestTemporaryFullAccuracyPermissions(withPurposeKey: "CustomKey")
-        mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        
-        //self.view.addSubview(mapView)
-        
-        LocationManager.shared.requestLocationAuthorization()
+        /*
+        if (CLLocationManager().accuracyAuthorization == .fullAccuracy) {
+            //print("now is reducedAccuracy ask for")
+            //
+        }else {
+            //initMap()
+        }
+         */
     }
     
-    func requestPermissionsButtonTapped() {
+    func initMap() {
+        print("initMap")
+        print(CLLocationManager.init().location?.coordinate ?? "no location data")
+       
+        let cameraOptions = CameraOptions(center: CLLocationManager.init().location?.coordinate, zoom: 10.0)
+        self.mapView.mapboxMap.setCamera(to: cameraOptions)
+
+        if let currentLocation = self.mapView.location.latestLocation {
+            print("latestLocation")
+            print(currentLocation.coordinate.latitude)
+            let cameraOptions = CameraOptions(center: CLLocationCoordinate2D(latitude: 40.7135, longitude: -74.0066), zoom: 10.0)
+            self.mapView.mapboxMap.setCamera(to: cameraOptions)
+        }
         
+        mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.view.addSubview(mapView)
+        
+        //let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
+        mapView.location.options.puckType = .puck2D()
+        mapView.location.options.puckBearingSource = .course
+        
+        //initUI()
+    }
+    
+    func requstFullAccuracy(){
+        self.mapView.location.requestTemporaryFullAccuracyPermissions(withPurposeKey: "CustomKey")
+    }
+    
+    func initUI(){
+        // Setup and create button for toggling accuracy ring
+        setupToggleShowAccuracyButton()
+        
+        // Granularly configure the location puck with a `Puck2DConfiguration`
+        let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
+        mapView.location.options.puckType = .puck2D(configuration)
+        mapView.location.options.puckBearingSource = .course
+        
+        // Center map over the user's current location
+        /*
+        mapView.mapboxMap.onNext(.mapLoaded, handler: { [weak self] _ in
+            guard let self = self else { return }
+            
+            if let currentLocation = self.mapView.location.latestLocation {
+                print("onNext")
+                let cameraOptions = CameraOptions(center: currentLocation.coordinate, zoom: 20.0)
+                self.mapView.camera.ease(to: cameraOptions, duration: 2.0)
+            }
+        })
+         */
+        
+        // Accuracy ring is only shown when zoom is greater than or equal to 18
+        mapView.mapboxMap.onEvery(.cameraChanged, handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.toggleAccuracyRadiusButton.isHidden = self.mapView.cameraState.zoom < 18.0
+        })
+    }
+    
+    @objc func showHideAccuracyRadius() {
+        showsAccuracyRing.toggle()
+    }
+    
+    func syncPuckAndButton() {
+        // Update puck config
+        var configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
+        configuration.showsAccuracyRing = showsAccuracyRing
+        mapView.location.options.puckType = .puck2D(configuration)
+        
+        // Update button title
+        let title: String = showsAccuracyRing ? "Disable Accuracy Radius" : "Enable Accuracy Radius"
+        toggleAccuracyRadiusButton.setTitle(title, for: .normal)
+    }
+    
+    private func setupToggleShowAccuracyButton() {
+        // Styling
+        toggleAccuracyRadiusButton.backgroundColor = .systemBlue
+        toggleAccuracyRadiusButton.addTarget(self, action: #selector(showHideAccuracyRadius), for: .touchUpInside)
+        toggleAccuracyRadiusButton.setTitleColor(.white, for: .normal)
+        toggleAccuracyRadiusButton.isHidden = true
+        syncPuckAndButton()
+        toggleAccuracyRadiusButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(toggleAccuracyRadiusButton)
+        
+        // Constraints
+        toggleAccuracyRadiusButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20.0).isActive = true
+        toggleAccuracyRadiusButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20.0).isActive = true
+        toggleAccuracyRadiusButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 650.0).isActive = true
     }
     
 }
 
 extension MapViewController: LocationPermissionsDelegate {
-    private func locationManager(_ locationManager: LocationManager, didChangeAccuracyAuthorization accuracyAuthorization: CLAccuracyAuthorization) {
+    func locationManager(_ locationManager: LocationManager, didChangeAccuracyAuthorization accuracyAuthorization: CLAccuracyAuthorization) {
         if accuracyAuthorization == .reducedAccuracy {
             // Perform an action in response to the new change in accuracy
             print("reducedAccuracy")
+            //mapView.location.requestTemporaryFullAccuracyPermissions(withPurposeKey: "CustomKey")
+            
         }
         if accuracyAuthorization == .fullAccuracy {
             print("fullAccuracy")
+            initMap()
             
         }
     }
@@ -53,36 +143,4 @@ extension MapViewController: LocationPermissionsDelegate {
 }
 
 
-class LocationManager: NSObject, CLLocationManagerDelegate {
 
-    static let shared = LocationManager()
-    private var locationManager: CLLocationManager = CLLocationManager()
-    private var requestLocationAuthorizationCallback: ((CLAuthorizationStatus) -> Void)?
-
-    public func requestLocationAuthorization() {
-        self.locationManager.delegate = self
-        let currentStatus = CLLocationManager.authorizationStatus()
-
-        // Only ask authorization if it was never asked before
-        guard currentStatus == .notDetermined else { return }
-
-        // Starting on iOS 13.4.0, to get .authorizedAlways permission, you need to
-        // first ask for WhenInUse permission, then ask for Always permission to
-        // get to a second system alert
-        if #available(iOS 13.4, *) {
-            self.requestLocationAuthorizationCallback = { status in
-                if status == .authorizedWhenInUse {
-                    self.locationManager.requestAlwaysAuthorization()
-                }
-            }
-            self.locationManager.requestWhenInUseAuthorization()
-        } else {
-            self.locationManager.requestAlwaysAuthorization()
-        }
-    }
-    // MARK: - CLLocationManagerDelegate
-    public func locationManager(_ manager: CLLocationManager,
-                                didChangeAuthorization status: CLAuthorizationStatus) {
-        self.requestLocationAuthorizationCallback?(status)
-    }
-}
