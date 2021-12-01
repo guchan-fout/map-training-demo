@@ -8,10 +8,12 @@
 import UIKit
 import MapboxMaps
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     internal var mapView: MapView!
+    internal var locationManager: CLLocationManager!
     internal let toggleAccuracyRadiusButton: UIButton = UIButton(frame: .zero)
+    internal var directBtn: UIButton!
     internal var showsAccuracyRing: Bool = false {
         didSet {
             syncPuckAndButton()
@@ -21,27 +23,32 @@ class MapViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         mapView = MapView(frame: view.bounds)
         mapView.location.delegate = self
+        locationManager = CLLocationManager()
+        locationManager.delegate = self
         
         /*
-        if (CLLocationManager().accuracyAuthorization == .fullAccuracy) {
-            //print("now is reducedAccuracy ask for")
-            //
-        }else {
-            //initMap()
-        }
+         if (CLLocationManager().accuracyAuthorization == .fullAccuracy) {
+         //print("now is reducedAccuracy ask for")
+         //
+         }else {
+         //initMap()
+         }
          */
     }
     
     func initMap() {
         print("initMap")
         print(CLLocationManager.init().location?.coordinate ?? "no location data")
-       
-        let cameraOptions = CameraOptions(center: CLLocationManager.init().location?.coordinate, zoom: 10.0)
-        self.mapView.mapboxMap.setCamera(to: cameraOptions)
 
+        locationManager.startUpdatingHeading()
+
+        
+        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 10.0)
+        self.mapView.mapboxMap.setCamera(to: cameraOptions)
+        
         if let currentLocation = self.mapView.location.latestLocation {
             print("latestLocation")
             print(currentLocation.coordinate.latitude)
@@ -56,7 +63,34 @@ class MapViewController: UIViewController {
         mapView.location.options.puckType = .puck2D()
         mapView.location.options.puckBearingSource = .course
         
+        initButton()
         //initUI()
+    }
+    
+    func initButton() {
+        print("\(#function)")
+        directBtn = UIButton(frame: CGRect(x: 5,
+                                           y: view.bounds.height - 100,
+                                           width: 100,
+                                           height: 30))
+        directBtn.backgroundColor = .systemBlue
+        directBtn.isHidden = false
+        directBtn.setTitle("Compass", for: .normal)
+        directBtn.addTarget(self, action: #selector(changeDirection), for: .touchUpInside)
+        
+        view.addSubview(directBtn)
+        
+        //directBtn.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Constraints
+        //directBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20.0).isActive = true
+        //directBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20.0).isActive = true
+        //directBtn.topAnchor.constraint(equalTo: view.topAnchor, constant: 650.0).isActive = true
+        
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
+        print (heading.magneticHeading)
     }
     
     func requstFullAccuracy(){
@@ -74,15 +108,15 @@ class MapViewController: UIViewController {
         
         // Center map over the user's current location
         /*
-        mapView.mapboxMap.onNext(.mapLoaded, handler: { [weak self] _ in
-            guard let self = self else { return }
-            
-            if let currentLocation = self.mapView.location.latestLocation {
-                print("onNext")
-                let cameraOptions = CameraOptions(center: currentLocation.coordinate, zoom: 20.0)
-                self.mapView.camera.ease(to: cameraOptions, duration: 2.0)
-            }
-        })
+         mapView.mapboxMap.onNext(.mapLoaded, handler: { [weak self] _ in
+         guard let self = self else { return }
+         
+         if let currentLocation = self.mapView.location.latestLocation {
+         print("onNext")
+         let cameraOptions = CameraOptions(center: currentLocation.coordinate, zoom: 20.0)
+         self.mapView.camera.ease(to: cameraOptions, duration: 2.0)
+         }
+         })
          */
         
         // Accuracy ring is only shown when zoom is greater than or equal to 18
@@ -94,6 +128,12 @@ class MapViewController: UIViewController {
     
     @objc func showHideAccuracyRadius() {
         showsAccuracyRing.toggle()
+    }
+    
+    @objc func changeDirection() {
+        print(locationManager.heading?.trueHeading)
+        let new = CameraOptions(bearing:locationManager.heading?.magneticHeading)
+        mapView.mapboxMap.setCamera(to: new)
     }
     
     func syncPuckAndButton() {
