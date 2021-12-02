@@ -12,14 +12,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     internal var mapView: MapView!
     internal var locationManager: CLLocationManager!
-    internal let toggleAccuracyRadiusButton: UIButton = UIButton(frame: .zero)
-    internal var directBtn: UIButton!
-    internal var showsAccuracyRing: Bool = false {
-        didSet {
-            syncPuckAndButton()
-        }
-    }
-    
+    internal var startCompassBtn: UIButton!
+    internal var stopCompassBtn: UIButton!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,69 +23,64 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         mapView.location.delegate = self
         locationManager = CLLocationManager()
         locationManager.delegate = self
-        
-        /*
-         if (CLLocationManager().accuracyAuthorization == .fullAccuracy) {
-         //print("now is reducedAccuracy ask for")
-         //
-         }else {
-         //initMap()
-         }
-         */
+
     }
     
     func initMap() {
         print("initMap")
         print(CLLocationManager.init().location?.coordinate ?? "no location data")
 
-        locationManager.startUpdatingHeading()
-
-        
         let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 10.0)
         self.mapView.mapboxMap.setCamera(to: cameraOptions)
         
+        /*
         if let currentLocation = self.mapView.location.latestLocation {
             print("latestLocation")
             print(currentLocation.coordinate.latitude)
             let cameraOptions = CameraOptions(center: CLLocationCoordinate2D(latitude: 40.7135, longitude: -74.0066), zoom: 10.0)
             self.mapView.mapboxMap.setCamera(to: cameraOptions)
         }
+         */
         
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.view.addSubview(mapView)
         
-        //let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
         mapView.location.options.puckType = .puck2D()
         mapView.location.options.puckBearingSource = .course
         
-        initButton()
-        //initUI()
+        initCompassButton()
     }
     
-    func initButton() {
+    func initCompassButton() {
         print("\(#function)")
-        directBtn = UIButton(frame: CGRect(x: 5,
-                                           y: view.bounds.height - 100,
+        startCompassBtn = UIButton(frame: CGRect(x: 5,
+                                                 y: view.bounds.height * 0.8,
                                            width: 100,
                                            height: 30))
-        directBtn.backgroundColor = .systemBlue
-        directBtn.isHidden = false
-        directBtn.setTitle("Compass", for: .normal)
-        directBtn.addTarget(self, action: #selector(changeDirection), for: .touchUpInside)
+        startCompassBtn.setTitleColor(.blue, for: .normal)
+        startCompassBtn.isHidden = false
+        startCompassBtn.setTitle("Start", for: .normal)
+        startCompassBtn.addTarget(self, action: #selector(startCompass), for: .touchUpInside)
         
-        view.addSubview(directBtn)
+        view.addSubview(startCompassBtn)
         
-        //directBtn.translatesAutoresizingMaskIntoConstraints = false
+        stopCompassBtn = UIButton(frame: CGRect(x: startCompassBtn.frame.origin.x,
+                                                y: startCompassBtn.frame.origin.y + startCompassBtn.bounds.height + 5,
+                                           width: 100,
+                                           height: 30))
         
-        // Constraints
-        //directBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20.0).isActive = true
-        //directBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20.0).isActive = true
-        //directBtn.topAnchor.constraint(equalTo: view.topAnchor, constant: 650.0).isActive = true
+        stopCompassBtn.setTitleColor(.gray, for: .normal)
+        stopCompassBtn.isHidden = false
+        stopCompassBtn.setTitle("Stop", for: .normal)
+        stopCompassBtn.addTarget(self, action: #selector(stopCompass), for: .touchUpInside)
+        view.addSubview(stopCompassBtn)
         
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
         print (heading.magneticHeading)
+        let new = CameraOptions(bearing:locationManager.heading?.magneticHeading)
+        mapView.mapboxMap.setCamera(to: new)
     }
     
     func requstFullAccuracy(){
@@ -98,9 +88,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func initUI(){
-        // Setup and create button for toggling accuracy ring
-        setupToggleShowAccuracyButton()
-        
+
         // Granularly configure the location puck with a `Puck2DConfiguration`
         let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
         mapView.location.options.puckType = .puck2D(configuration)
@@ -122,47 +110,20 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         // Accuracy ring is only shown when zoom is greater than or equal to 18
         mapView.mapboxMap.onEvery(.cameraChanged, handler: { [weak self] _ in
             guard let self = self else { return }
-            self.toggleAccuracyRadiusButton.isHidden = self.mapView.cameraState.zoom < 18.0
+            //self.toggleAccuracyRadiusButton.isHidden = self.mapView.cameraState.zoom < 18.0
         })
     }
     
-    @objc func showHideAccuracyRadius() {
-        showsAccuracyRing.toggle()
+
+    
+    @objc func startCompass() {
+        locationManager.startUpdatingHeading()
     }
     
-    @objc func changeDirection() {
-        print(locationManager.heading?.trueHeading)
-        let new = CameraOptions(bearing:locationManager.heading?.magneticHeading)
-        mapView.mapboxMap.setCamera(to: new)
+    @objc func stopCompass() {
+        locationManager.stopUpdatingHeading()
     }
-    
-    func syncPuckAndButton() {
-        // Update puck config
-        var configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
-        configuration.showsAccuracyRing = showsAccuracyRing
-        mapView.location.options.puckType = .puck2D(configuration)
-        
-        // Update button title
-        let title: String = showsAccuracyRing ? "Disable Accuracy Radius" : "Enable Accuracy Radius"
-        toggleAccuracyRadiusButton.setTitle(title, for: .normal)
-    }
-    
-    private func setupToggleShowAccuracyButton() {
-        // Styling
-        toggleAccuracyRadiusButton.backgroundColor = .systemBlue
-        toggleAccuracyRadiusButton.addTarget(self, action: #selector(showHideAccuracyRadius), for: .touchUpInside)
-        toggleAccuracyRadiusButton.setTitleColor(.white, for: .normal)
-        toggleAccuracyRadiusButton.isHidden = true
-        syncPuckAndButton()
-        toggleAccuracyRadiusButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(toggleAccuracyRadiusButton)
-        
-        // Constraints
-        toggleAccuracyRadiusButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20.0).isActive = true
-        toggleAccuracyRadiusButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20.0).isActive = true
-        toggleAccuracyRadiusButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 650.0).isActive = true
-    }
-    
+            
 }
 
 extension MapViewController: LocationPermissionsDelegate {
