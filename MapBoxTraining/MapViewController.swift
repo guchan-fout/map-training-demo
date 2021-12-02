@@ -14,7 +14,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     internal var locationManager: CLLocationManager!
     internal var startCompassBtn: UIButton!
     internal var stopCompassBtn: UIButton!
-
+    internal var home: UIButton!
+    internal let shangHaiHome = CLLocationCoordinate2D.init(latitude: 31.326055179625705, longitude: 121.45195437087595)
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +56,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     func initCompassButton() {
         print("\(#function)")
         startCompassBtn = UIButton(frame: CGRect(x: 5,
-                                                 y: view.bounds.height * 0.8,
+                                                 y: view.bounds.height * 0.7,
                                            width: 100,
                                            height: 30))
         startCompassBtn.setTitleColor(.blue, for: .normal)
@@ -69,11 +71,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                                            width: 100,
                                            height: 30))
         
-        stopCompassBtn.setTitleColor(.gray, for: .normal)
+        stopCompassBtn.setTitleColor(.blue, for: .normal)
         stopCompassBtn.isHidden = false
         stopCompassBtn.setTitle("Stop", for: .normal)
         stopCompassBtn.addTarget(self, action: #selector(stopCompass), for: .touchUpInside)
         view.addSubview(stopCompassBtn)
+        
+        home = UIButton(frame: CGRect(x: stopCompassBtn.frame.origin.x,
+                                                y: stopCompassBtn.frame.origin.y + startCompassBtn.bounds.height + 5,
+                                           width: 100,
+                                           height: 30))
+        
+        home.setTitleColor(.blue, for: .normal)
+        home.isHidden = false
+        home.setTitle("home", for: .normal)
+        home.addTarget(self, action: #selector(flyToHome), for: .touchUpInside)
+        view.addSubview(home)
         
     }
     
@@ -122,6 +135,25 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     @objc func stopCompass() {
         locationManager.stopUpdatingHeading()
+    }
+    
+    @objc func flyToHome() {
+        if (self.home.title(for: .normal) == "Back") {
+            let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 10.0)
+            self.mapView.mapboxMap.setCamera(to: cameraOptions)
+            self.mapView.camera.fly(to: cameraOptions, duration: 2.0, completion: { result in
+                if (result == .end) {
+                    self.home.setTitle("Home", for: .normal)
+                }
+            })
+        } else {
+            let newCamera = CameraOptions(center: shangHaiHome)
+            self.mapView.camera.ease(to: newCamera, duration: 5.0, curve: .easeInOut, completion: { result in
+                if (result == .end) {
+                    self.home.setTitle("Back", for: .normal)
+                }
+            })
+        }
     }
             
 }
