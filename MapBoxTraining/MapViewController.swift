@@ -15,7 +15,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     internal var startCompassBtn: UIButton!
     internal var stopCompassBtn: UIButton!
     internal var home: UIButton!
+
+    internal let annonationWidth:CGFloat = 100
+    internal let annonationHeight:CGFloat = 35
+    
     internal let shangHaiHome = CLLocationCoordinate2D.init(latitude: 31.326055179625705, longitude: 121.45195437087595)
+    
+    internal let tempAnnonationLocation = CLLocationCoordinate2D.init(latitude: 35.68017841654902, longitude:  139.62552536616514)
+    
     
     
     override func viewDidLoad() {
@@ -25,6 +32,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         mapView.location.delegate = self
         locationManager = CLLocationManager()
         locationManager.delegate = self
+        
+        initMap()
 
     }
     
@@ -51,7 +60,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         mapView.location.options.puckBearingSource = .course
         
         initCompassButton()
-    }
+        
+        self.addViewAnnotation(at:tempAnnonationLocation, name:"2222")
+        
+        if let coor = locationManager.location?.coordinate {
+            self.addViewAnnotation(at: coor,name:"1111")
+            
+        }
+}
     
     func initCompassButton() {
         print("\(#function)")
@@ -105,7 +121,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         // Granularly configure the location puck with a `Puck2DConfiguration`
         let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
         mapView.location.options.puckType = .puck2D(configuration)
-        mapView.location.options.puckBearingSource = .course
+        mapView.location.options.puckBearingSource = .heading
         
         // Center map over the user's current location
         /*
@@ -126,8 +142,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             //self.toggleAccuracyRadiusButton.isHidden = self.mapView.cameraState.zoom < 18.0
         })
     }
-    
-
     
     @objc func startCompass() {
         locationManager.startUpdatingHeading()
@@ -155,6 +169,47 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             })
         }
     }
+   
+    
+    private func addViewAnnotation(at coordinate: CLLocationCoordinate2D, name:String) {
+        let options = ViewAnnotationOptions(
+            geometry: Point(coordinate),
+            width: annonationWidth,
+            height: annonationHeight,
+            allowOverlap: true,
+            anchor: .center
+            
+        )
+        let sampleView = createAnnotationView(withText: name)
+        try? mapView.viewAnnotations.add(sampleView, options: options)
+    }
+    
+    private func createAnnotationView(withText text: String) -> UIView {
+        let image = UIImage(named: "munchi.png")
+        let iconView = UIImageView(frame:
+                          CGRect(x: 0, y: 0, width: 35, height: 35))
+           iconView.image = image
+        iconView.contentMode = .scaleAspectFit
+        iconView.backgroundColor = .darkGray
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 50, height: 35))
+        label.text = text
+        label.font = .systemFont(ofSize: 14)
+        label.numberOfLines = 0
+        label.textColor = .black
+        label.backgroundColor = .white
+        label.textAlignment = .center
+             
+        let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: annonationWidth, height: annonationHeight))
+        stackView.axis = .horizontal
+        //stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.addArrangedSubview(iconView)
+        stackView.addArrangedSubview(label)
+        
+        return stackView
+    }
+     
             
 }
 
@@ -173,6 +228,9 @@ extension MapViewController: LocationPermissionsDelegate {
         }
     }
     
+    func locationManager(_ locationManager: LocationManager, didFailToLocateUserWithError error: Error) {
+        print("\(#function) error:\(error)")
+    }
 }
 
 
