@@ -78,8 +78,13 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
             print("\(#function) ask for permission")
             askForLocationPermisson()
         case 1:
-            print("\(#function) open a map")
+            print("\(#function) open a basic map")
             let mapVC = MapViewController()
+            mapVC.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(mapVC, animated: true)
+        case 2:
+            print("\(#function) open a train")
+            let mapVC = CustomTrainMapViewController()
             mapVC.modalPresentationStyle = .fullScreen
             self.navigationController?.pushViewController(mapVC, animated: true)
         default:

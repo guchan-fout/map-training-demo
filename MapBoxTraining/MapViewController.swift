@@ -15,8 +15,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     internal var startCompassBtn: UIButton!
     internal var stopCompassBtn: UIButton!
     internal var home: UIButton!
-
-    internal let annonationWidth:CGFloat = 100
+    internal var pitch: UIButton!
+    internal let annonationWidth:CGFloat = 85
     internal let annonationHeight:CGFloat = 35
     
     internal let shangHaiHome = CLLocationCoordinate2D.init(latitude: 31.326055179625705, longitude: 121.45195437087595)
@@ -41,9 +41,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         print("initMap")
         print(CLLocationManager.init().location?.coordinate ?? "no location data")
 
-        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 10.0)
+        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0, pitch: 60)
         self.mapView.mapboxMap.setCamera(to: cameraOptions)
         
+                
         /*
         if let currentLocation = self.mapView.location.latestLocation {
             print("latestLocation")
@@ -71,6 +72,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     func initCompassButton() {
         print("\(#function)")
+        
+        
+        
         startCompassBtn = UIButton(frame: CGRect(x: 5,
                                                  y: view.bounds.height * 0.7,
                                            width: 100,
@@ -100,9 +104,20 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         home.setTitleColor(.blue, for: .normal)
         home.isHidden = false
-        home.setTitle("home", for: .normal)
+        home.setTitle("ToShanghai", for: .normal)
         home.addTarget(self, action: #selector(flyToHome), for: .touchUpInside)
         view.addSubview(home)
+        
+        pitch = UIButton(frame: CGRect(x: home.frame.origin.x,
+                                                y: home.frame.origin.y + home.bounds.height + 5,
+                                           width: 100,
+                                           height: 30))
+        
+        pitch.setTitleColor(.blue, for: .normal)
+        pitch.isHidden = false
+        pitch.setTitle("pitch", for: .normal)
+        pitch.addTarget(self, action: #selector(changePitch), for: .touchUpInside)
+        view.addSubview(pitch)
         
     }
     
@@ -122,7 +137,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
         mapView.location.options.puckType = .puck2D(configuration)
         mapView.location.options.puckBearingSource = .heading
-        
+       
         // Center map over the user's current location
         /*
          mapView.mapboxMap.onNext(.mapLoaded, handler: { [weak self] _ in
@@ -151,20 +166,45 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.stopUpdatingHeading()
     }
     
+    @objc func changePitch(){
+        //When use low level, toValue 0 also can reproduce the bug
+        /*
+        let animator = mapView.camera.makeAnimator(duration: 3, curve: .linear) { (transition) in
+            transition.pitch.toValue = 0
+        }
+        animator.startAnimation()
+         */
+        
+        
+        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0,pitch: 20)
+        self.mapView.mapboxMap.setCamera(to: cameraOptions)
+        self.mapView.camera.fly(to: cameraOptions, duration: 5.0, completion: { result in
+            if (result == .end) {
+            }
+        })
+    }
+    
     @objc func flyToHome() {
-        if (self.home.title(for: .normal) == "Back") {
-            let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 10.0)
+        if (self.home.title(for: .normal) == "ToTokyo") {
+            let animator = mapView.camera.makeAnimator(duration: 3, curve: .linear) { (transition) in
+                //transition.pitch.fromValue = 80
+                transition.pitch.toValue = 80
+            }
+            animator.startAnimation()
+            /*
+            let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0)
             self.mapView.mapboxMap.setCamera(to: cameraOptions)
-            self.mapView.camera.fly(to: cameraOptions, duration: 2.0, completion: { result in
+            self.mapView.camera.fly(to: cameraOptions, duration: 5.0, completion: { result in
                 if (result == .end) {
-                    self.home.setTitle("Home", for: .normal)
+                    self.home.setTitle("ToShanghai", for: .normal)
                 }
             })
+             */
         } else {
-            let newCamera = CameraOptions(center: shangHaiHome)
-            self.mapView.camera.ease(to: newCamera, duration: 5.0, curve: .easeInOut, completion: { result in
+            let newCamera = CameraOptions(center: shangHaiHome,zoom: 5.0,pitch: 30)
+            self.mapView.camera.fly(to: newCamera, duration: 5.0, completion: { result in
                 if (result == .end) {
-                    self.home.setTitle("Back", for: .normal)
+                    self.home.setTitle("ToTokyo", for: .normal)
                 }
             })
         }
@@ -182,14 +222,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         )
         let sampleView = createAnnotationView(withText: name)
         try? mapView.viewAnnotations.add(sampleView, options: options)
+        
+       
     }
     
     private func createAnnotationView(withText text: String) -> UIView {
-        let image = UIImage(named: "munchi.png")
+        let image = UIImage(named: "munchi")
         let iconView = UIImageView(frame:
                           CGRect(x: 0, y: 0, width: 35, height: 35))
-           iconView.image = image
-        iconView.contentMode = .scaleAspectFit
+        iconView.image = image
+        iconView.contentMode = .scaleToFill
         iconView.backgroundColor = .darkGray
         
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 50, height: 35))
@@ -203,6 +245,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: annonationWidth, height: annonationHeight))
         stackView.axis = .horizontal
         //stackView.alignment = .center
+        stackView.distribution = .fillEqually
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(iconView)
         stackView.addArrangedSubview(label)

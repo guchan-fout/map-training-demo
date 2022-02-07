@@ -14,6 +14,7 @@
 		2C5CC512274F381D008EF015 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C5CC510274F381D008EF015 /* LaunchScreen.storyboard */; };
 		2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CC557274F5ED8008EF015 /* MapViewController.swift */; };
 		2CDBEB1A2750C1B1002F6C88 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CDBEB192750C1B1002F6C88 /* Settings.bundle */; };
+		2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0CAAE27B0E8D000130C61 /* CustomTrainMapViewController.swift */; };
 		3FA144C2A1F3AA4CDC30F62D /* Pods_MapBoxTraining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D68350ADD40BA0AA506EA1AA /* Pods_MapBoxTraining.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		2C5CC513274F381D008EF015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C5CC557274F5ED8008EF015 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		2CDBEB192750C1B1002F6C88 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		2CF0CAAE27B0E8D000130C61 /* CustomTrainMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTrainMapViewController.swift; sourceTree = "<group>"; };
 		9D29CF4D2946043E4DE207B4 /* Pods-MapBoxTraining.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxTraining.release.xcconfig"; path = "Target Support Files/Pods-MapBoxTraining/Pods-MapBoxTraining.release.xcconfig"; sourceTree = "<group>"; };
 		A207568CA2FD9D24CCBAFCBF /* Pods-MapBoxTraining.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxTraining.debug.xcconfig"; path = "Target Support Files/Pods-MapBoxTraining/Pods-MapBoxTraining.debug.xcconfig"; sourceTree = "<group>"; };
 		D68350ADD40BA0AA506EA1AA /* Pods_MapBoxTraining.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapBoxTraining.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +89,7 @@
 				2C5CC507274F3819008EF015 /* SceneDelegate.swift */,
 				2C5CC509274F3819008EF015 /* MainViewController.swift */,
 				2C5CC557274F5ED8008EF015 /* MapViewController.swift */,
+				2CF0CAAE27B0E8D000130C61 /* CustomTrainMapViewController.swift */,
 				2C5CC50E274F381D008EF015 /* Assets.xcassets */,
 				2C5CC510274F381D008EF015 /* LaunchScreen.storyboard */,
 				2C5CC513274F381D008EF015 /* Info.plist */,
@@ -212,6 +215,7 @@
 				2C5CC50A274F3819008EF015 /* MainViewController.swift in Sources */,
 				2C5CC506274F3819008EF015 /* AppDelegate.swift in Sources */,
 				2C5CC508274F3819008EF015 /* SceneDelegate.swift in Sources */,
+				2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */,
 				2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
