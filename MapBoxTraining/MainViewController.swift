@@ -16,7 +16,7 @@ class MainViewController: UIViewController  {
     var safeArea: UILayoutGuide!
     let cellID = "cell"
     
-    var characters = ["Ask for Location permisson", "Open a map", "", ""]
+    var characters = ["Ask for Location permisson", "Open a map", "Open a train map", ""]
     
     override func viewDidLoad() {
         super.viewDidLoad()

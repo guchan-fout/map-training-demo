@@ -62,18 +62,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         initCompassButton()
         
+        /*
         self.addViewAnnotation(at:tempAnnonationLocation, name:"2222")
         
         if let coor = locationManager.location?.coordinate {
             self.addViewAnnotation(at: coor,name:"1111")
             
         }
+         */
 }
     
     func initCompassButton() {
         print("\(#function)")
         
-        
+        mapView.ornaments.options.scaleBar.margins = CGPoint(x: 100, y: 300)
+
         
         startCompassBtn = UIButton(frame: CGRect(x: 5,
                                                  y: view.bounds.height * 0.7,
@@ -137,6 +140,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
         mapView.location.options.puckType = .puck2D(configuration)
         mapView.location.options.puckBearingSource = .heading
+        
        
         // Center map over the user's current location
         /*
@@ -168,38 +172,36 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     @objc func changePitch(){
         //When use low level, toValue 0 also can reproduce the bug
-        /*
+        
         let animator = mapView.camera.makeAnimator(duration: 3, curve: .linear) { (transition) in
             transition.pitch.toValue = 0
         }
         animator.startAnimation()
-         */
+         
+        /*
         
-        
-        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0,pitch: 20)
-        self.mapView.mapboxMap.setCamera(to: cameraOptions)
+        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0,pitch: 0)
+        //self.mapView.mapboxMap.setCamera(to: cameraOptions)
+        self.mapView.camera.ease(to: cameraOptions, duration: 5.0, curve: .linear, completion: nil)
         self.mapView.camera.fly(to: cameraOptions, duration: 5.0, completion: { result in
             if (result == .end) {
             }
         })
+         */
+         
     }
     
     @objc func flyToHome() {
         if (self.home.title(for: .normal) == "ToTokyo") {
-            let animator = mapView.camera.makeAnimator(duration: 3, curve: .linear) { (transition) in
-                //transition.pitch.fromValue = 80
-                transition.pitch.toValue = 80
-            }
-            animator.startAnimation()
-            /*
+            
             let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0)
-            self.mapView.mapboxMap.setCamera(to: cameraOptions)
+            //self.mapView.mapboxMap.setCamera(to: cameraOptions)
             self.mapView.camera.fly(to: cameraOptions, duration: 5.0, completion: { result in
                 if (result == .end) {
                     self.home.setTitle("ToShanghai", for: .normal)
                 }
             })
-             */
+            
         } else {
             let newCamera = CameraOptions(center: shangHaiHome,zoom: 5.0,pitch: 30)
             self.mapView.camera.fly(to: newCamera, duration: 5.0, completion: { result in
