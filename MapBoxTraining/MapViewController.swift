@@ -19,6 +19,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     internal let annonationWidth:CGFloat = 85
     internal let annonationHeight:CGFloat = 35
     
+    internal var cameraLocationConsumer: CameraLocationConsumer!
+    
     internal let shangHaiHome = CLLocationCoordinate2D.init(latitude: 31.326055179625705, longitude: 121.45195437087595)
     
     internal let tempAnnonationLocation = CLLocationCoordinate2D.init(latitude: 35.68017841654902, longitude:  139.62552536616514)
@@ -34,28 +36,37 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.delegate = self
         
         initMap()
-
+        
     }
     
     func initMap() {
         print("initMap")
         print(CLLocationManager.init().location?.coordinate ?? "no location data")
-
-        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0, pitch: 60)
+        
+        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0, pitch: 0)
         self.mapView.mapboxMap.setCamera(to: cameraOptions)
         
-                
+        
         /*
-        if let currentLocation = self.mapView.location.latestLocation {
-            print("latestLocation")
-            print(currentLocation.coordinate.latitude)
-            let cameraOptions = CameraOptions(center: CLLocationCoordinate2D(latitude: 40.7135, longitude: -74.0066), zoom: 10.0)
-            self.mapView.mapboxMap.setCamera(to: cameraOptions)
-        }
+         if let currentLocation = self.mapView.location.latestLocation {
+         print("latestLocation")
+         print(currentLocation.coordinate.latitude)
+         let cameraOptions = CameraOptions(center: CLLocationCoordinate2D(latitude: 40.7135, longitude: -74.0066), zoom: 10.0)
+         self.mapView.mapboxMap.setCamera(to: cameraOptions)
+         }
          */
         
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.view.addSubview(mapView)
+        
+        //cameraLocationConsumer = CameraLocationConsumer(mapView: mapView)
+        mapView.mapboxMap.onNext(.mapLoaded) { _ in
+            // Register the location consumer with the map
+            // Note that the location manager holds weak references to consumers, which should be retained
+            print("send new location")
+            //self.mapView.location.addLocationConsumer(newConsumer: self.cameraLocationConsumer)
+            
+        }
         
         mapView.location.options.puckType = .puck2D()
         mapView.location.options.puckBearingSource = .course
@@ -63,25 +74,25 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         initCompassButton()
         
         /*
-        self.addViewAnnotation(at:tempAnnonationLocation, name:"2222")
-        
-        if let coor = locationManager.location?.coordinate {
-            self.addViewAnnotation(at: coor,name:"1111")
-            
-        }
+         self.addViewAnnotation(at:tempAnnonationLocation, name:"2222")
+         
+         if let coor = locationManager.location?.coordinate {
+         self.addViewAnnotation(at: coor,name:"1111")
+         
+         }
          */
-}
+    }
     
     func initCompassButton() {
         print("\(#function)")
         
-        mapView.ornaments.options.scaleBar.margins = CGPoint(x: 100, y: 300)
-
+        //mapView.ornaments.options.scaleBar.margins = CGPoint(x: 100, y: 300)
+        
         
         startCompassBtn = UIButton(frame: CGRect(x: 5,
                                                  y: view.bounds.height * 0.7,
-                                           width: 100,
-                                           height: 30))
+                                                 width: 100,
+                                                 height: 30))
         startCompassBtn.setTitleColor(.blue, for: .normal)
         startCompassBtn.isHidden = false
         startCompassBtn.setTitle("Start", for: .normal)
@@ -91,8 +102,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         stopCompassBtn = UIButton(frame: CGRect(x: startCompassBtn.frame.origin.x,
                                                 y: startCompassBtn.frame.origin.y + startCompassBtn.bounds.height + 5,
-                                           width: 100,
-                                           height: 30))
+                                                width: 100,
+                                                height: 30))
         
         stopCompassBtn.setTitleColor(.blue, for: .normal)
         stopCompassBtn.isHidden = false
@@ -101,9 +112,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         view.addSubview(stopCompassBtn)
         
         home = UIButton(frame: CGRect(x: stopCompassBtn.frame.origin.x,
-                                                y: stopCompassBtn.frame.origin.y + startCompassBtn.bounds.height + 5,
-                                           width: 100,
-                                           height: 30))
+                                      y: stopCompassBtn.frame.origin.y + startCompassBtn.bounds.height + 5,
+                                      width: 100,
+                                      height: 30))
         
         home.setTitleColor(.blue, for: .normal)
         home.isHidden = false
@@ -112,9 +123,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         view.addSubview(home)
         
         pitch = UIButton(frame: CGRect(x: home.frame.origin.x,
-                                                y: home.frame.origin.y + home.bounds.height + 5,
-                                           width: 100,
-                                           height: 30))
+                                       y: home.frame.origin.y + home.bounds.height + 5,
+                                       width: 100,
+                                       height: 30))
         
         pitch.setTitleColor(.blue, for: .normal)
         pitch.isHidden = false
@@ -135,13 +146,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func initUI(){
-
+        
         // Granularly configure the location puck with a `Puck2DConfiguration`
         let configuration = Puck2DConfiguration(topImage: UIImage(named: "star"))
         mapView.location.options.puckType = .puck2D(configuration)
         mapView.location.options.puckBearingSource = .heading
         
-       
+        
         // Center map over the user's current location
         /*
          mapView.mapboxMap.onNext(.mapLoaded, handler: { [weak self] _ in
@@ -177,18 +188,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             transition.pitch.toValue = 0
         }
         animator.startAnimation()
-         
-        /*
         
-        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0,pitch: 0)
-        //self.mapView.mapboxMap.setCamera(to: cameraOptions)
-        self.mapView.camera.ease(to: cameraOptions, duration: 5.0, curve: .linear, completion: nil)
-        self.mapView.camera.fly(to: cameraOptions, duration: 5.0, completion: { result in
-            if (result == .end) {
-            }
-        })
-         */
+        /*
          
+         let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0,pitch: 0)
+         //self.mapView.mapboxMap.setCamera(to: cameraOptions)
+         self.mapView.camera.ease(to: cameraOptions, duration: 5.0, curve: .linear, completion: nil)
+         self.mapView.camera.fly(to: cameraOptions, duration: 5.0, completion: { result in
+         if (result == .end) {
+         }
+         })
+         */
+        
     }
     
     @objc func flyToHome() {
@@ -203,7 +214,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             })
             
         } else {
-            let newCamera = CameraOptions(center: shangHaiHome,zoom: 5.0,pitch: 30)
+            
+            let newCamera = CameraOptions(center: shangHaiHome,zoom: 5.0,pitch: 0)
             self.mapView.camera.fly(to: newCamera, duration: 5.0, completion: { result in
                 if (result == .end) {
                     self.home.setTitle("ToTokyo", for: .normal)
@@ -211,7 +223,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             })
         }
     }
-   
+    
     
     private func addViewAnnotation(at coordinate: CLLocationCoordinate2D, name:String) {
         let options = ViewAnnotationOptions(
@@ -225,13 +237,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let sampleView = createAnnotationView(withText: name)
         try? mapView.viewAnnotations.add(sampleView, options: options)
         
-       
+        
     }
     
     private func createAnnotationView(withText text: String) -> UIView {
         let image = UIImage(named: "munchi")
         let iconView = UIImageView(frame:
-                          CGRect(x: 0, y: 0, width: 35, height: 35))
+                                    CGRect(x: 0, y: 0, width: 35, height: 35))
         iconView.image = image
         iconView.contentMode = .scaleToFill
         iconView.backgroundColor = .darkGray
@@ -243,7 +255,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         label.textColor = .black
         label.backgroundColor = .white
         label.textAlignment = .center
-             
+        
         let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: annonationWidth, height: annonationHeight))
         stackView.axis = .horizontal
         //stackView.alignment = .center
@@ -254,8 +266,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         return stackView
     }
-     
-            
+    
+    
 }
 
 extension MapViewController: LocationPermissionsDelegate {
@@ -278,5 +290,20 @@ extension MapViewController: LocationPermissionsDelegate {
     }
 }
 
-
+public class CameraLocationConsumer: LocationConsumer {
+    weak var mapView: MapView?
+    
+    init(mapView: MapView) {
+        self.mapView = mapView
+    }
+    
+    public func locationUpdate(newLocation: Location) {
+        print("get new location:\(newLocation.location.debugDescription)")
+        mapView?.camera.ease(
+            to: CameraOptions(center: newLocation.coordinate, zoom: 15),
+            duration: 1.3)
+        
+    
+    }
+}
 

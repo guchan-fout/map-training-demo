@@ -1,13 +1,13 @@
 PODS:
-  - MapboxCommon (21.0.1)
-  - MapboxCoreMaps (10.2.0):
-    - MapboxCommon (~> 21.0)
-  - MapboxMaps (10.2.0):
-    - MapboxCommon (= 21.0.1)
-    - MapboxCoreMaps (= 10.2.0)
-    - MapboxMobileEvents (= 1.0.6)
+  - MapboxCommon (21.1.0)
+  - MapboxCoreMaps (10.3.2):
+    - MapboxCommon (~> 21.1)
+  - MapboxMaps (10.3.0):
+    - MapboxCommon (= 21.1.0)
+    - MapboxCoreMaps (= 10.3.2)
+    - MapboxMobileEvents (= 1.0.7)
     - Turf (~> 2.0)
-  - MapboxMobileEvents (1.0.6)
+  - MapboxMobileEvents (1.0.7)
   - Turf (2.2.0)
 
 DEPENDENCIES:
@@ -22,10 +22,10 @@ SPEC REPOS:
     - Turf
 
 SPEC CHECKSUMS:
-  MapboxCommon: fdfdbd4e87a225190913f2f4b4a73ec51ed77eaa
-  MapboxCoreMaps: bdd0115bfd8bf6df402468710cb23c926938b03d
-  MapboxMaps: 1ed477cbe573a9e740801dfc9c636ef33bbc3f54
-  MapboxMobileEvents: 14d7ac3ee95b4142c4fec2205dfd48ff453e8871
+  MapboxCommon: 019dac381fcb3aab115b5d488593261c810253ad
+  MapboxCoreMaps: 418b6e02464c00d7227e778164f6ca67755ae6a1
+  MapboxMaps: fc490ab5b8df6f74a82d35c56bc2ea4d576ad4ee
+  MapboxMobileEvents: f7f3e8daeb4b83688ae62a4172dce79169a97233
   Turf: 1a6bc2d0142f84610445159565c3c93d62b83897
 
 PODFILE CHECKSUM: 0946e60a69148573b894c64bf094245aa38d3e8c

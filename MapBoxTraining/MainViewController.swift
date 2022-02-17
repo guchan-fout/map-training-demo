@@ -16,7 +16,7 @@ class MainViewController: UIViewController  {
     var safeArea: UILayoutGuide!
     let cellID = "cell"
     
-    var characters = ["Ask for Location permisson", "Open a map", "Open a train map", ""]
+    var characters = ["Ask for Location permisson", "Open a map", "Open a train map", "current marker","location consumer"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,6 +85,16 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
         case 2:
             print("\(#function) open a train")
             let mapVC = CustomTrainMapViewController()
+            mapVC.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(mapVC, animated: true)
+        case 3:
+            print("\(#function) open a train")
+            let mapVC = MarkerViewController()
+            mapVC.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(mapVC, animated: true)
+        case 4:
+            print("\(#function) open a train")
+            let mapVC = LocationComsumerViewController()
             mapVC.modalPresentationStyle = .fullScreen
             self.navigationController?.pushViewController(mapVC, animated: true)
         default:

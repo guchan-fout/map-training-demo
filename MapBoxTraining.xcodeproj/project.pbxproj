@@ -13,6 +13,8 @@
 		2C5CC50F274F381D008EF015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C5CC50E274F381D008EF015 /* Assets.xcassets */; };
 		2C5CC512274F381D008EF015 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C5CC510274F381D008EF015 /* LaunchScreen.storyboard */; };
 		2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CC557274F5ED8008EF015 /* MapViewController.swift */; };
+		2CAE93DD27BDE42800698597 /* MarkerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAE93DC27BDE42800698597 /* MarkerViewController.swift */; };
+		2CAE93DF27BE5B0400698597 /* LocationComsumerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAE93DE27BE5B0400698597 /* LocationComsumerViewController.swift */; };
 		2CDBEB1A2750C1B1002F6C88 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CDBEB192750C1B1002F6C88 /* Settings.bundle */; };
 		2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0CAAE27B0E8D000130C61 /* CustomTrainMapViewController.swift */; };
 		2CF0CAB127B3A96200130C61 /* N02-20_Station.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2CF0CAB027B3A96200130C61 /* N02-20_Station.geojson */; };
@@ -30,6 +32,8 @@
 		2C5CC511274F381D008EF015 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2C5CC513274F381D008EF015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C5CC557274F5ED8008EF015 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		2CAE93DC27BDE42800698597 /* MarkerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerViewController.swift; sourceTree = "<group>"; };
+		2CAE93DE27BE5B0400698597 /* LocationComsumerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationComsumerViewController.swift; sourceTree = "<group>"; };
 		2CDBEB192750C1B1002F6C88 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2CF0CAAE27B0E8D000130C61 /* CustomTrainMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTrainMapViewController.swift; sourceTree = "<group>"; };
 		2CF0CAB027B3A96200130C61 /* N02-20_Station.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = "N02-20_Station.geojson"; sourceTree = "<group>"; };
@@ -102,6 +106,8 @@
 				2C5CC50E274F381D008EF015 /* Assets.xcassets */,
 				2C5CC510274F381D008EF015 /* LaunchScreen.storyboard */,
 				2C5CC513274F381D008EF015 /* Info.plist */,
+				2CAE93DC27BDE42800698597 /* MarkerViewController.swift */,
+				2CAE93DE27BE5B0400698597 /* LocationComsumerViewController.swift */,
 			);
 			path = MapBoxTraining;
 			sourceTree = "<group>";
@@ -224,11 +230,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CAE93DD27BDE42800698597 /* MarkerViewController.swift in Sources */,
 				2C5CC50A274F3819008EF015 /* MainViewController.swift in Sources */,
 				2C5CC506274F3819008EF015 /* AppDelegate.swift in Sources */,
 				2C5CC508274F3819008EF015 /* SceneDelegate.swift in Sources */,
 				2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */,
 				2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */,
+				2CAE93DF27BE5B0400698597 /* LocationComsumerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
