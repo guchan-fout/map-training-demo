@@ -14,6 +14,8 @@ public class LocationComsumerViewController: UIViewController, CLLocationManager
     internal var locationManager: CLLocationManager!
     internal var locationConsumer: CustomLocationConsumer!
     internal var setNewLocation: UIButton!
+    internal var fakeGPS: UIButton!
+    internal var customeLocationProvider: CustomLocationProvider!
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -32,11 +34,13 @@ public class LocationComsumerViewController: UIViewController, CLLocationManager
         // Add user position icon to the map with location indicator layer
         mapView.location.options.puckType = .puck2D()
 
-        
+
         // Allows the delegate to receive information about map events.
         mapView.mapboxMap.onNext(.mapLoaded) { _ in
             print("Maploaded")
             self.locationConsumer = CustomLocationConsumer(mapView: self.mapView)
+            
+            self.setCustomLocationProvider()
         }
         
         setNewLocation = UIButton(frame: CGRect(x: 10,
@@ -47,15 +51,29 @@ public class LocationComsumerViewController: UIViewController, CLLocationManager
         setNewLocation.setTitleColor(.blue, for: .normal)
         setNewLocation.isHidden = false
         setNewLocation.setTitle("new Location", for: .normal)
-        setNewLocation.addTarget(self, action: #selector(moveToNewLocation), for: .touchUpInside)
+        setNewLocation.addTarget(self, action: #selector(moveToFakeGPS), for: .touchUpInside)
         view.addSubview(setNewLocation)
     }
     
     @objc func moveToNewLocation() {
         let coordinate = CLLocation(latitude: 35.62199867811333, longitude: 139.10981792443334)
         let location = Location(with: coordinate, heading:nil)
-        //let location = Location(location: coordinate, heading: CLLocationManager.init().heading?.magneticHeading, accuracyAuthorization: 0)
         self.locationConsumer.locationUpdate(newLocation: location)
+    }
+    func setCustomLocationProvider() {
+        print(#function)
+        customeLocationProvider = CustomLocationProvider(locationManager: self.locationManager)
+        mapView.location.overrideLocationProvider(with: self.customeLocationProvider)
+    }
+    
+    @objc func moveToFakeGPS() {
+        print(#function)
+        let coordinate = CLLocation(latitude: 35.62199867811333, longitude: 139.10981792443334)
+        let location = Location(with: coordinate, heading:nil)
+        mapView?.camera.ease(
+            to: CameraOptions(center: location.coordinate, zoom: 10),
+            duration: 0)
+        self.customeLocationProvider.locationManager(locationManager, didUpdateLocations: [coordinate])
     }
 }
 
@@ -68,6 +86,7 @@ public class CustomLocationConsumer: LocationConsumer {
     
     public func locationUpdate(newLocation: Location) {
         print("get new location:\(newLocation.location.debugDescription)")
+        
         mapView?.camera.ease(
             to: CameraOptions(center: newLocation.coordinate, zoom: 10),
             duration: 5)
@@ -79,7 +98,8 @@ public class CustomLocationConsumer: LocationConsumer {
         pointAnnotation.iconAnchor = .bottom
         let pointAnnotationManager = self.mapView?.annotations.makePointAnnotationManager()
         pointAnnotationManager?.annotations = [pointAnnotation]
-        
-        
     }
 }
+
+
+
