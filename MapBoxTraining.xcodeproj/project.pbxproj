@@ -21,6 +21,7 @@
 		2CF0CAB327B3A96E00130C61 /* N02-20_RailroadSection.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2CF0CAB227B3A96E00130C61 /* N02-20_RailroadSection.geojson */; };
 		2CF0CAB527B3E08600130C61 /* sample.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2CF0CAB427B3E08600130C61 /* sample.geojson */; };
 		2CF72B8927BFE9010015A51A /* CustomLocationProvider2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF72B8827BFE9010015A51A /* CustomLocationProvider2.swift */; };
+		2CF72B8B27D5EFAB0015A51A /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF72B8A27D5EFAB0015A51A /* MasterViewController.swift */; };
 		3FA144C2A1F3AA4CDC30F62D /* Pods_MapBoxTraining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D68350ADD40BA0AA506EA1AA /* Pods_MapBoxTraining.framework */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 		2CF0CAB227B3A96E00130C61 /* N02-20_RailroadSection.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = "N02-20_RailroadSection.geojson"; sourceTree = "<group>"; };
 		2CF0CAB427B3E08600130C61 /* sample.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = sample.geojson; sourceTree = "<group>"; };
 		2CF72B8827BFE9010015A51A /* CustomLocationProvider2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLocationProvider2.swift; sourceTree = "<group>"; };
+		2CF72B8A27D5EFAB0015A51A /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
 		9D29CF4D2946043E4DE207B4 /* Pods-MapBoxTraining.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxTraining.release.xcconfig"; path = "Target Support Files/Pods-MapBoxTraining/Pods-MapBoxTraining.release.xcconfig"; sourceTree = "<group>"; };
 		A207568CA2FD9D24CCBAFCBF /* Pods-MapBoxTraining.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxTraining.debug.xcconfig"; path = "Target Support Files/Pods-MapBoxTraining/Pods-MapBoxTraining.debug.xcconfig"; sourceTree = "<group>"; };
 		D68350ADD40BA0AA506EA1AA /* Pods_MapBoxTraining.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapBoxTraining.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,6 +113,7 @@
 				2CAE93DC27BDE42800698597 /* MarkerViewController.swift */,
 				2CAE93DE27BE5B0400698597 /* LocationComsumerViewController.swift */,
 				2CF72B8827BFE9010015A51A /* CustomLocationProvider2.swift */,
+				2CF72B8A27D5EFAB0015A51A /* MasterViewController.swift */,
 			);
 			path = MapBoxTraining;
 			sourceTree = "<group>";
@@ -238,6 +241,7 @@
 				2C5CC50A274F3819008EF015 /* MainViewController.swift in Sources */,
 				2C5CC506274F3819008EF015 /* AppDelegate.swift in Sources */,
 				2C5CC508274F3819008EF015 /* SceneDelegate.swift in Sources */,
+				2CF72B8B27D5EFAB0015A51A /* MasterViewController.swift in Sources */,
 				2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */,
 				2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */,
 				2CAE93DF27BE5B0400698597 /* LocationComsumerViewController.swift in Sources */,

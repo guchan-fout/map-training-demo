@@ -74,6 +74,7 @@ public class LocationComsumerViewController: UIViewController, CLLocationManager
             to: CameraOptions(center: location.coordinate, zoom: 10),
             duration: 0)
         self.customeLocationProvider.locationManager(locationManager, didUpdateLocations: [coordinate])
+        //self.customeLocationProvider.stopUpdatingLocation()
     }
 }
 

@@ -89,19 +89,25 @@ extension CustomLocationProvider: LocationProvider {
 
 extension CustomLocationProvider: CLLocationManagerDelegate {
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        print(#function)
         delegate?.locationProvider(self, didUpdateLocations: locations)
     }
 
     public func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
+        print(#function)
         delegate?.locationProvider(self, didUpdateHeading: heading)
     }
 
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(#function)
         delegate?.locationProvider(self, didFailWithError: error)
     }
 
     @available(iOS 14.0, *)
     public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        print(#function)
         delegate?.locationProviderDidChangeAuthorization(self)
     }
 }
+
+

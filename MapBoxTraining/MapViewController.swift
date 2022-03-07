@@ -30,7 +30,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        mapView = MapView(frame: view.bounds)
+        let options = MapInitOptions(styleURI: StyleURI.dark)
+        mapView = MapView(frame: view.bounds,mapInitOptions: options)
         mapView.location.delegate = self
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -43,7 +44,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         print("initMap")
         print(CLLocationManager.init().location?.coordinate ?? "no location data")
         
-        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 5.0, pitch: 0)
+        let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 12.0, pitch: 0)
         self.mapView.mapboxMap.setCamera(to: cameraOptions)
         
         
