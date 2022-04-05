@@ -16,6 +16,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     internal var stopCompassBtn: UIButton!
     internal var home: UIButton!
     internal var pitch: UIButton!
+    internal var addAnnotation: UIButton!
     internal let annonationWidth:CGFloat = 85
     internal let annonationHeight:CGFloat = 35
     
@@ -33,6 +34,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let options = MapInitOptions(styleURI: StyleURI.dark)
         mapView = MapView(frame: view.bounds,mapInitOptions: options)
         mapView.location.delegate = self
+        mapView.gestures.options.pitchEnabled = false
         locationManager = CLLocationManager()
         locationManager.delegate = self
         
@@ -46,6 +48,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         let cameraOptions = CameraOptions(center: locationManager.location?.coordinate, zoom: 12.0, pitch: 0)
         self.mapView.mapboxMap.setCamera(to: cameraOptions)
+        
+        //self.mapView.presentsWithTransaction = true
+        
         
         
         /*
@@ -74,6 +79,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         initCompassButton()
         
+        //self.addViewAnnotation(at:self.addViewAnnotation(at:tempAnnonationLocation, name:"Annotation"), name:"Annotation")
         /*
          self.addViewAnnotation(at:tempAnnonationLocation, name:"2222")
          
@@ -133,6 +139,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         pitch.setTitle("pitch", for: .normal)
         pitch.addTarget(self, action: #selector(changePitch), for: .touchUpInside)
         view.addSubview(pitch)
+        
+        addAnnotation = UIButton(frame: CGRect(x: pitch.frame.origin.x,
+                                       y: pitch.frame.origin.y + pitch.bounds.height + 5,
+                                       width: 100,
+                                       height: 30))
+        
+        addAnnotation.setTitleColor(.blue, for: .normal)
+        addAnnotation.isHidden = false
+        addAnnotation.setTitle("addAnnotation", for: .normal)
+        addAnnotation.addTarget(self, action: #selector(addTempAnnotation), for: .touchUpInside)
+        view.addSubview(addAnnotation)
         
     }
     
@@ -236,13 +253,45 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             
         )
         let sampleView = createAnnotationView(withText: name)
-        try? mapView.viewAnnotations.add(sampleView, options: options)
         
-        
+        /*
+        UIView.transition(with: sampleView, duration: 1.0, options: [.transitionCrossDissolve], animations: {
+            try? self.mapView.viewAnnotations.add(sampleView, options: options)
+        }, completion: nil)
+        */
+
+    }
+    
+    @objc func addTempAnnotation() {
+        let newcoordinate = tempAnnonationLocation
+        let newname = "Here"
+        let options = ViewAnnotationOptions(
+            geometry: Point(newcoordinate),
+            width: annonationWidth,
+            height: annonationHeight,
+            allowOverlap: true,
+            anchor: .center
+            
+        )
+        let sampleView = createAnnotationView(withText: newname)
+       
+        UIView.transition(with: self.mapView, duration: 2.0, options: [.transitionCrossDissolve], animations: {
+            try? self.mapView.viewAnnotations.add(sampleView, options: options)
+        }, completion: { (finished: Bool) in
+            UIView.transition(with: self.mapView, duration: 2.0, options: [.transitionCrossDissolve], animations: { [self] in
+                let new_options = ViewAnnotationOptions(
+                    width: 20,
+                    height: 20,
+                    allowOverlap: true,
+                    anchor: .center
+                )
+                try? self.mapView.viewAnnotations.update(sampleView, options: new_options)
+            }, completion: nil)
+        })
     }
     
     private func createAnnotationView(withText text: String) -> UIView {
-        let image = UIImage(named: "munchi")
+        let image = UIImage(named: "red_pin")
         let iconView = UIImageView(frame:
                                     CGRect(x: 0, y: 0, width: 35, height: 35))
         iconView.image = image
