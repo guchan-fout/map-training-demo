@@ -24,8 +24,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     internal let shangHaiHome = CLLocationCoordinate2D.init(latitude: 31.326055179625705, longitude: 121.45195437087595)
     
-    internal let tempAnnonationLocation = CLLocationCoordinate2D.init(latitude: 35.68017841654902, longitude:  139.62552536616514)
-    
+    internal let startCoordinate = CLLocationCoordinate2D.init(latitude: 35.68017841654902, longitude:  139.62552536616514)
+    internal let endCoordinate = CLLocationCoordinate2D.init(latitude: 35.69657842654902, longitude:  139.62552536616514)
     
     
     override func viewDidLoad() {
@@ -141,9 +141,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         view.addSubview(pitch)
         
         addAnnotation = UIButton(frame: CGRect(x: pitch.frame.origin.x,
-                                       y: pitch.frame.origin.y + pitch.bounds.height + 5,
-                                       width: 100,
-                                       height: 30))
+                                               y: pitch.frame.origin.y + pitch.bounds.height + 5,
+                                               width: 100,
+                                               height: 30))
         
         addAnnotation.setTitleColor(.blue, for: .normal)
         addAnnotation.isHidden = false
@@ -253,17 +253,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             
         )
         let sampleView = createAnnotationView(withText: name)
-        
-        /*
-        UIView.transition(with: sampleView, duration: 1.0, options: [.transitionCrossDissolve], animations: {
-            try? self.mapView.viewAnnotations.add(sampleView, options: options)
-        }, completion: nil)
-        */
-
+        try? self.mapView.viewAnnotations.add(sampleView, options: options)
     }
     
     @objc func addTempAnnotation() {
-        let newcoordinate = tempAnnonationLocation
+        let newcoordinate = startCoordinate
         let newname = "Here"
         let options = ViewAnnotationOptions(
             geometry: Point(newcoordinate),
@@ -274,21 +268,39 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             
         )
         let sampleView = createAnnotationView(withText: newname)
-       
-        UIView.transition(with: self.mapView, duration: 2.0, options: [.transitionCrossDissolve], animations: {
+        
+        
+        let interval = coodinateCalculator(startLocation: startCoordinate, endLocation: endCoordinate)
+        var start = startCoordinate.latitude
+        let end = endCoordinate.latitude
+        UIView.transition(with: self.mapView, duration: 1.0, options: [.transitionCrossDissolve], animations: {
             try? self.mapView.viewAnnotations.add(sampleView, options: options)
         }, completion: { (finished: Bool) in
-            UIView.transition(with: self.mapView, duration: 2.0, options: [.transitionCrossDissolve], animations: { [self] in
+            Timer.scheduledTimer(withTimeInterval: 0.005, repeats: true) { timer in
+                if (start >= end) {timer.invalidate()}
+                let temp = CLLocationCoordinate2D.init(latitude: start + interval, longitude:  self.endCoordinate.longitude)
+                print("temp : %s",temp)
                 let new_options = ViewAnnotationOptions(
-                    width: 20,
-                    height: 20,
+                    geometry: Point(temp),
                     allowOverlap: true,
                     anchor: .center
                 )
                 try? self.mapView.viewAnnotations.update(sampleView, options: new_options)
-            }, completion: nil)
+                start += interval
+            }
+            
         })
     }
+    
+    func coodinateCalculator(startLocation:CLLocationCoordinate2D,endLocation:CLLocationCoordinate2D)-> Double {
+        let start = startLocation.latitude
+        let end = endLocation.latitude
+        
+        let interval = (end-start)/50
+        
+        return interval
+    }
+    
     
     private func createAnnotationView(withText text: String) -> UIView {
         let image = UIImage(named: "red_pin")
@@ -353,7 +365,7 @@ public class CameraLocationConsumer: LocationConsumer {
             to: CameraOptions(center: newLocation.coordinate, zoom: 15),
             duration: 1.3)
         
-    
+        
     }
 }
 
