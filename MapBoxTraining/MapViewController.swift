@@ -17,6 +17,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     internal var home: UIButton!
     internal var pitch: UIButton!
     internal var addAnnotation: UIButton!
+    internal var moveAnnotation: UIButton!
     internal let annonationWidth:CGFloat = 85
     internal let annonationHeight:CGFloat = 35
     
@@ -26,6 +27,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     internal let startCoordinate = CLLocationCoordinate2D.init(latitude: 35.68017841654902, longitude:  139.62552536616514)
     internal let endCoordinate = CLLocationCoordinate2D.init(latitude: 35.69657842654902, longitude:  139.62552536616514)
+    internal var currentCoordinate = CLLocationCoordinate2D.init(latitude: 0, longitude: 0)
+    internal var updateInterval: Double = 0.0
+    
+    private var displayLink: CADisplayLink? {
+        didSet { oldValue?.invalidate() }
+    }
+    
+    deinit {
+        displayLink?.invalidate()
+    }
+
+    private let featureId = "some-feature-id"
+    private var annotationView = UIView()
     
     
     override func viewDidLoad() {
@@ -79,7 +93,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         initCompassButton()
         
-        //self.addViewAnnotation(at:self.addViewAnnotation(at:tempAnnonationLocation, name:"Annotation"), name:"Annotation")
+        //self.addViewAnnotation(at:startCoordinate, name:"Here")
         /*
          self.addViewAnnotation(at:tempAnnonationLocation, name:"2222")
          
@@ -97,7 +111,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         
         startCompassBtn = UIButton(frame: CGRect(x: 5,
-                                                 y: view.bounds.height * 0.7,
+                                                 y: view.bounds.height * 0.65,
                                                  width: 100,
                                                  height: 30))
         startCompassBtn.setTitleColor(.blue, for: .normal)
@@ -142,14 +156,25 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         addAnnotation = UIButton(frame: CGRect(x: pitch.frame.origin.x,
                                                y: pitch.frame.origin.y + pitch.bounds.height + 5,
-                                               width: 100,
+                                               width: 150,
                                                height: 30))
         
-        addAnnotation.setTitleColor(.blue, for: .normal)
+        addAnnotation.setTitleColor(.white, for: .normal)
         addAnnotation.isHidden = false
         addAnnotation.setTitle("addAnnotation", for: .normal)
         addAnnotation.addTarget(self, action: #selector(addTempAnnotation), for: .touchUpInside)
         view.addSubview(addAnnotation)
+        
+        moveAnnotation = UIButton(frame: CGRect(x: pitch.frame.origin.x,
+                                                y: addAnnotation.frame.origin.y + addAnnotation.bounds.height + 5,
+                                                width: 150,
+                                                height: 30))
+        
+        moveAnnotation.setTitleColor(.white, for: .normal)
+        moveAnnotation.isHidden = false
+        moveAnnotation.setTitle("updatePosition", for: .normal)
+        moveAnnotation.addTarget(self, action: #selector(updatePosition(_:)), for: .touchUpInside)
+        view.addSubview(moveAnnotation)
         
     }
     
@@ -248,48 +273,84 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             geometry: Point(coordinate),
             width: annonationWidth,
             height: annonationHeight,
+            associatedFeatureId: featureId,
             allowOverlap: true,
             anchor: .center
             
         )
-        let sampleView = createAnnotationView(withText: name)
-        try? self.mapView.viewAnnotations.add(sampleView, options: options)
+        annotationView = createAnnotationView(withText: name)
+        try? self.mapView.viewAnnotations.add(annotationView, options: options)
     }
     
     @objc func addTempAnnotation() {
-        let newcoordinate = startCoordinate
         let newname = "Here"
         let options = ViewAnnotationOptions(
-            geometry: Point(newcoordinate),
+            geometry: Point(startCoordinate),
             width: annonationWidth,
             height: annonationHeight,
             allowOverlap: true,
             anchor: .center
             
         )
-        let sampleView = createAnnotationView(withText: newname)
+        annotationView = createAnnotationView(withText: newname)
         
         
-        let interval = coodinateCalculator(startLocation: startCoordinate, endLocation: endCoordinate)
+        updateInterval = coodinateCalculator(startLocation: startCoordinate, endLocation: endCoordinate)
         var start = startCoordinate.latitude
         let end = endCoordinate.latitude
         UIView.transition(with: self.mapView, duration: 1.0, options: [.transitionCrossDissolve], animations: {
-            try? self.mapView.viewAnnotations.add(sampleView, options: options)
+            try? self.mapView.viewAnnotations.add(self.annotationView, options: options)
         }, completion: { (finished: Bool) in
-            Timer.scheduledTimer(withTimeInterval: 0.005, repeats: true) { timer in
-                if (start >= end) {timer.invalidate()}
-                let temp = CLLocationCoordinate2D.init(latitude: start + interval, longitude:  self.endCoordinate.longitude)
-                print("temp : %s",temp)
-                let new_options = ViewAnnotationOptions(
-                    geometry: Point(temp),
-                    allowOverlap: true,
-                    anchor: .center
-                )
-                try? self.mapView.viewAnnotations.update(sampleView, options: new_options)
-                start += interval
-            }
+            /*
+             Timer.scheduledTimer(withTimeInterval: 0.005, repeats: true) { timer in
+             if (start >= end) {timer.invalidate()}
+             let temp = CLLocationCoordinate2D.init(latitude: start + interval, longitude:  self.endCoordinate.longitude)
+             print("temp : %s",temp)
+             let new_options = ViewAnnotationOptions(
+             geometry: Point(temp),
+             allowOverlap: true,
+             anchor: .center
+             )
+             try? self.mapView.viewAnnotations.update(sampleView, options: new_options)
+             start += interval
+             }
+             */
             
         })
+    }
+    
+    @objc private func updateFromDisplayLink(displayLink: CADisplayLink) {
+        
+        guard (currentCoordinate.latitude <= endCoordinate.latitude) else {
+            displayLink.invalidate()
+            self.displayLink = nil
+            return
+        }
+        
+        // interpolate from origin to destination according to the animation progress
+        currentCoordinate = CLLocationCoordinate2D(
+            latitude: currentCoordinate.latitude + updateInterval,
+            longitude:currentCoordinate.longitude
+        )
+        
+        // update current position
+        print("updateFromDisplayLink to :%s",currentCoordinate)
+        
+        let new_options = ViewAnnotationOptions(
+            geometry: Point(currentCoordinate),
+            allowOverlap: true,
+            anchor: .center
+        )
+        try? self.mapView.viewAnnotations.update(annotationView, options: new_options)
+
+    }
+    
+    @objc private func updatePosition(_ sender: UITapGestureRecognizer) {
+        currentCoordinate = startCoordinate
+        
+        // add display link
+        displayLink = CADisplayLink(target: self, selector: #selector(updateFromDisplayLink(displayLink:)))
+        displayLink?.add(to: .current, forMode: .common)
     }
     
     func coodinateCalculator(startLocation:CLLocationCoordinate2D,endLocation:CLLocationCoordinate2D)-> Double {
@@ -307,7 +368,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let iconView = UIImageView(frame:
                                     CGRect(x: 0, y: 0, width: 35, height: 35))
         iconView.image = image
-        iconView.contentMode = .scaleToFill
+        iconView.contentMode = .scaleAspectFit
         iconView.backgroundColor = .darkGray
         
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 50, height: 35))
@@ -349,6 +410,15 @@ extension MapViewController: LocationPermissionsDelegate {
     
     func locationManager(_ locationManager: LocationManager, didFailToLocateUserWithError error: Error) {
         print("\(#function) error:\(error)")
+    }
+    
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
+        
+        // break reference cycle when moving away from screen
+        if parent == nil {
+            displayLink = nil
+        }
     }
 }
 
