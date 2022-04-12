@@ -6,6 +6,7 @@ target 'MapBoxTraining' do
   use_frameworks!
  # pod 'MapboxMaps', '10.3.0-rc.1'
   pod 'MapboxMaps'
+  pod 'MapboxNavigation', '~> 2.3'
   # Pods for MapBoxTraining
 
 end

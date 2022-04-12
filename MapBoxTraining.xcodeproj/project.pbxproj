@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C4FCCD92800085A0065D41E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4FCCD82800085A0065D41E /* AdvancedViewController.swift */; };
 		2C5CC506274F3819008EF015 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CC505274F3819008EF015 /* AppDelegate.swift */; };
 		2C5CC508274F3819008EF015 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CC507274F3819008EF015 /* SceneDelegate.swift */; };
 		2C5CC50A274F3819008EF015 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CC509274F3819008EF015 /* MainViewController.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2C4FCCD82800085A0065D41E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		2C5CC502274F3819008EF015 /* MapBoxTraining.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapBoxTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C5CC505274F3819008EF015 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2C5CC507274F3819008EF015 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				2CAE93DE27BE5B0400698597 /* LocationComsumerViewController.swift */,
 				2CF72B8827BFE9010015A51A /* CustomLocationProvider2.swift */,
 				2CF72B8A27D5EFAB0015A51A /* MasterViewController.swift */,
+				2C4FCCD82800085A0065D41E /* AdvancedViewController.swift */,
 			);
 			path = MapBoxTraining;
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 				2C5CC506274F3819008EF015 /* AppDelegate.swift in Sources */,
 				2C5CC508274F3819008EF015 /* SceneDelegate.swift in Sources */,
 				2CF72B8B27D5EFAB0015A51A /* MasterViewController.swift in Sources */,
+				2C4FCCD92800085A0065D41E /* AdvancedViewController.swift in Sources */,
 				2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */,
 				2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */,
 				2CAE93DF27BE5B0400698597 /* LocationComsumerViewController.swift in Sources */,
