@@ -16,7 +16,7 @@ class MainViewController: UIViewController  {
     var safeArea: UILayoutGuide!
     let cellID = "cell"
     
-    var characters = ["Ask for Location permisson", "Open a map", "Open a train map", "current marker","location consumer","master","Navigator","bounds","NKT"]
+    var characters = ["Ask for Location permisson", "Open a map", "Open a train map", "current marker","location consumer","master","Navigator","bounds","NKT","cluster"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -114,9 +114,17 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
             self.navigationController?.pushViewController(mapVC, animated: true)
         case 8:
             print("\(#function) open NHT")
+            //let mapVC = YaViewController()
             let mapVC = NHDemoViewController()
             mapVC.modalPresentationStyle = .fullScreen
             self.navigationController?.pushViewController(mapVC, animated: true)
+        case 9:
+            print("\(#function) open ClusterViewController")
+            //let mapVC = YaViewController()
+            let mapVC = ClusterViewController()
+            mapVC.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(mapVC, animated: true)
+            
         default:
             print("\(#function) no options")
         }

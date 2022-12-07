@@ -14,11 +14,14 @@
 		2C5CC50F274F381D008EF015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C5CC50E274F381D008EF015 /* Assets.xcassets */; };
 		2C5CC512274F381D008EF015 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C5CC510274F381D008EF015 /* LaunchScreen.storyboard */; };
 		2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CC557274F5ED8008EF015 /* MapViewController.swift */; };
+		2CA665112940240600E86BCB /* ClusterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA665102940240600E86BCB /* ClusterViewController.swift */; };
+		2CA6651329402FAF00E86BCB /* Fire_Hydrants.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6651229402FAF00E86BCB /* Fire_Hydrants.geojson */; };
 		2CAE93DD27BDE42800698597 /* MarkerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAE93DC27BDE42800698597 /* MarkerViewController.swift */; };
 		2CAE93DF27BE5B0400698597 /* LocationComsumerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAE93DE27BE5B0400698597 /* LocationComsumerViewController.swift */; };
 		2CD1598228C1F28300D81950 /* CoordinateBoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1598128C1F28300D81950 /* CoordinateBoundsViewController.swift */; };
 		2CDBEB1A2750C1B1002F6C88 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CDBEB192750C1B1002F6C88 /* Settings.bundle */; };
 		2CE651A428D045AB0097B1EB /* NHDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE651A328D045AB0097B1EB /* NHDemoViewController.swift */; };
+		2CE651A828E143330097B1EB /* YaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE651A728E143330097B1EB /* YaViewController.swift */; };
 		2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0CAAE27B0E8D000130C61 /* CustomTrainMapViewController.swift */; };
 		2CF0CAB127B3A96200130C61 /* N02-20_Station.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2CF0CAB027B3A96200130C61 /* N02-20_Station.geojson */; };
 		2CF0CAB327B3A96E00130C61 /* N02-20_RailroadSection.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2CF0CAB227B3A96E00130C61 /* N02-20_RailroadSection.geojson */; };
@@ -38,11 +41,14 @@
 		2C5CC511274F381D008EF015 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2C5CC513274F381D008EF015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C5CC557274F5ED8008EF015 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		2CA665102940240600E86BCB /* ClusterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterViewController.swift; sourceTree = "<group>"; };
+		2CA6651229402FAF00E86BCB /* Fire_Hydrants.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Fire_Hydrants.geojson; sourceTree = "<group>"; };
 		2CAE93DC27BDE42800698597 /* MarkerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerViewController.swift; sourceTree = "<group>"; };
 		2CAE93DE27BE5B0400698597 /* LocationComsumerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationComsumerViewController.swift; sourceTree = "<group>"; };
 		2CD1598128C1F28300D81950 /* CoordinateBoundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinateBoundsViewController.swift; sourceTree = "<group>"; };
 		2CDBEB192750C1B1002F6C88 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2CE651A328D045AB0097B1EB /* NHDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NHDemoViewController.swift; sourceTree = "<group>"; };
+		2CE651A728E143330097B1EB /* YaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YaViewController.swift; sourceTree = "<group>"; };
 		2CF0CAAE27B0E8D000130C61 /* CustomTrainMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTrainMapViewController.swift; sourceTree = "<group>"; };
 		2CF0CAB027B3A96200130C61 /* N02-20_Station.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = "N02-20_Station.geojson"; sourceTree = "<group>"; };
 		2CF0CAB227B3A96E00130C61 /* N02-20_RailroadSection.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = "N02-20_RailroadSection.geojson"; sourceTree = "<group>"; };
@@ -89,6 +95,7 @@
 				2CF0CAB427B3E08600130C61 /* sample.geojson */,
 				2CF0CAB227B3A96E00130C61 /* N02-20_RailroadSection.geojson */,
 				2CF0CAB027B3A96200130C61 /* N02-20_Station.geojson */,
+				2CA6651229402FAF00E86BCB /* Fire_Hydrants.geojson */,
 				2CDBEB192750C1B1002F6C88 /* Settings.bundle */,
 				2C5CC504274F3819008EF015 /* MapBoxTraining */,
 				2C5CC503274F3819008EF015 /* Products */,
@@ -109,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				2C5CC505274F3819008EF015 /* AppDelegate.swift */,
+				2CA665102940240600E86BCB /* ClusterViewController.swift */,
 				2C5CC507274F3819008EF015 /* SceneDelegate.swift */,
 				2C5CC509274F3819008EF015 /* MainViewController.swift */,
 				2C5CC557274F5ED8008EF015 /* MapViewController.swift */,
@@ -123,6 +131,7 @@
 				2C4FCCD82800085A0065D41E /* AdvancedViewController.swift */,
 				2CD1598128C1F28300D81950 /* CoordinateBoundsViewController.swift */,
 				2CE651A328D045AB0097B1EB /* NHDemoViewController.swift */,
+				2CE651A728E143330097B1EB /* YaViewController.swift */,
 			);
 			path = MapBoxTraining;
 			sourceTree = "<group>";
@@ -187,6 +196,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CA6651329402FAF00E86BCB /* Fire_Hydrants.geojson in Resources */,
 				2CF0CAB327B3A96E00130C61 /* N02-20_RailroadSection.geojson in Resources */,
 				2CF0CAB127B3A96200130C61 /* N02-20_Station.geojson in Resources */,
 				2C5CC512274F381D008EF015 /* LaunchScreen.storyboard in Resources */,
@@ -250,10 +260,12 @@
 				2C5CC50A274F3819008EF015 /* MainViewController.swift in Sources */,
 				2CE651A428D045AB0097B1EB /* NHDemoViewController.swift in Sources */,
 				2C5CC506274F3819008EF015 /* AppDelegate.swift in Sources */,
+				2CA665112940240600E86BCB /* ClusterViewController.swift in Sources */,
 				2C5CC508274F3819008EF015 /* SceneDelegate.swift in Sources */,
 				2CF72B8B27D5EFAB0015A51A /* MasterViewController.swift in Sources */,
 				2C4FCCD92800085A0065D41E /* AdvancedViewController.swift in Sources */,
 				2CD1598228C1F28300D81950 /* CoordinateBoundsViewController.swift in Sources */,
+				2CE651A828E143330097B1EB /* YaViewController.swift in Sources */,
 				2CF0CAAF27B0E8D000130C61 /* CustomTrainMapViewController.swift in Sources */,
 				2C5CC558274F5ED8008EF015 /* MapViewController.swift in Sources */,
 				2CAE93DF27BE5B0400698597 /* LocationComsumerViewController.swift in Sources */,

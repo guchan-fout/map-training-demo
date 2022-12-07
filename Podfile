@@ -4,9 +4,10 @@
 target 'MapBoxTraining' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
- # pod 'MapboxMaps', '10.3.0-rc.1'
-  pod 'MapboxMaps'
-  pod 'MapboxNavigation', '~> 2.3'
+  
+  #pod 'MapboxMaps', '10.7.0'
+  pod 'MapboxMaps', '10.9.0-beta.1'
+  #pod 'MapboxNavigation', '~> 2.3'
   # Pods for MapBoxTraining
 
 end
