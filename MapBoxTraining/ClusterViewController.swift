@@ -50,6 +50,14 @@ class ClusterViewController: UIViewController {
         
         // here to get each point's feature, and check any of them are true, then the cluster's new parameter's value will be true
         let clusterProp: [String: Expression] = ["hasLowFlow": Exp(.any) {Exp(.lte){Exp(.get) { "FLOW" }; 100.0}}]
+        
+        /*
+        let clusterPropNG1: [String: Expression] = ["sum": Exp(.sum) { 10; 20}]
+                                                
+        let clusterPropNG2: [String: Expression] = ["sum": Exp(.sum) { 10
+                                                                       20}]
+        */
+        
         source.clusterProperties = clusterProp
         
         let sourceID = "fire-hydrant-source"
