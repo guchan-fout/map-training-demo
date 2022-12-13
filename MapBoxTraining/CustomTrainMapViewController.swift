@@ -14,6 +14,7 @@ class CustomTrainMapViewController: UIViewController {
     internal var showStation: UIButton!
     internal var query: UIButton!
     internal var showOneStation: UIButton!
+    internal var combineFilter: Expression!
     
     let geoJSONDataSourceIdentifier = "geoJSON-data-source"
     let stationLayer = "station-layer"
@@ -22,18 +23,23 @@ class CustomTrainMapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        let center = CLLocationCoordinate2D(latitude: 35.697543, longitude:139.591542)
+        //let center = CLLocationCoordinate2D(latitude: -13.517379, longitude: -71.977221)
         
-        let center = CLLocationCoordinate2D(latitude: 35.78735289961631, longitude:139.70111409343542)
-        let cameraOptions = CameraOptions(center: center, zoom: 7.5, pitch: 0)
+        let cameraOptions = CameraOptions(center: center, zoom: 13.5, pitch: 0)
         var styleURI: StyleURI?
-        if let url = URL(string: "mapbox://styles/chan-gu/ckytqtxkn000714p0lz2im82p") {
+        if let url = URL(string: "mapbox://styles/chan-gu/clblxljfl000116l3torih47m") {
             styleURI = StyleURI(url: url)
         }
         let mapInitOptions = MapInitOptions(cameraOptions: cameraOptions, styleURI: styleURI ?? .light)
         
         mapView = MapView(frame: view.bounds, mapInitOptions: mapInitOptions)
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        mapView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onMapClickY)))
+        
         view.addSubview(mapView)
+        mapView.gestures.delegate = self
         
         mapView.mapboxMap.onNext(.mapLoaded)  { _ in
             //self.setStationData()
@@ -271,5 +277,194 @@ class CustomTrainMapViewController: UIViewController {
         )
         let sampleView = createAnnotationText(withText: name)
         try? mapView.viewAnnotations.add(sampleView, options: options)
+    }
+    
+    @objc private func onMapClick(_ sender: UITapGestureRecognizer) {
+        guard sender.state == .ended else { return }
+        let clickPoint = sender.location(in: mapView)
+        let clickCoordinate = mapView.mapboxMap.coordinate(for: clickPoint)
+        var feature = Feature(geometry: Point(clickCoordinate))
+        print(feature)
+        //filterPoiLabelss(feature: feature)
+        filterPoiLabels(feature: feature)
+    }
+    
+    @objc private func onMapClickY(_ sender: UITapGestureRecognizer) {
+        guard sender.state == .ended else { return }
+        
+        
+        /*
+        do {
+            
+
+            
+            
+            let sourceIdentifier = "yjsource"
+            var source = VectorSource()
+            source.url = "mapbox://styles/chan-gu/clblxljfl000116l3torih47m"
+            // Add the vector source to the style
+            try mapView.mapboxMap.style.addSource(source, id: sourceIdentifier)
+            
+                        
+            let expression = Exp(.switchCase) { // Switching on a value
+                Exp(.gte) {
+                    Exp(.get) { "point" }
+                    3
+                }
+                "#A52A2A"
+                "#8B0000"
+                
+            }
+            
+            var yjLayer = SymbolLayer(id: "yjlayer")
+            yjLayer.source = sourceIdentifier
+            yjLayer.sourceLayer = "yjtest"
+            yjLayer.textField = .expression(Exp(.get) {"name"})
+            yjLayer.textSize = .constant(12)
+            yjLayer.textColor = .expression(expression)
+            yjLayer.visibility = .constant(.visible)
+            try mapView.mapboxMap.style.addLayer(yjLayer)
+             
+            
+        } catch {
+            print("Ran into an error adding source or layer: \(error)")
+        }
+             */
+        
+         do {
+         let b = try? mapView.mapboxMap.style.layerProperties(for:"yjtest")
+         print(b)
+         
+         try mapView.mapboxMap.style.updateLayer(withId: "yjtest", type: SymbolLayer.self) { layer in
+         print(layer.filter)
+         }
+         
+         let c = try? mapView.mapboxMap.style.layerProperties(for:"yjtest")
+         print(c)
+         
+         } catch {
+         print("update layer error: \(error)")
+         }
+         
+    }
+    
+    func filterPoiLabelss(feature: Feature) {
+        let style = mapView.mapboxMap.style
+        let center = mapView.mapboxMap.cameraState.center
+        //let center = CLLocationCoordinate2D(latitude: 35.70331432037365, longitude: 139.5906881364699)
+        var point: Turf.Feature!
+        point = Feature(geometry: Point(center))
+        
+        
+        do {
+            // Update the `SymbolLayer` with id "poi-label". This layer is included in the Mapbox
+            // Streets v11 style. In order to see all layers included with your style, either inspect
+            // the style in Mapbox Studio or inspect the `style.allLayerIdentifiers` property once
+            // the style has finished loading.
+            try style.updateLayer(withId: "poi-label", type: SymbolLayer.self) { (layer: inout SymbolLayer) throws in
+                // Filter the "poi-label" layer to only show points less than 150 meters away from the
+                // the specified feature.
+                layer.filter = Exp(.lt) {
+                    Exp(.distance) {
+                        // Specify the feature that will be used as an anchor for the distance check.
+                        // This feature should be a `GeoJSONObject`.
+                        GeoJSONObject.feature(point)
+                    }
+                    // Specify the distance in meters that you would like to limit visible POIs to.
+                    // Note that this checks the distance of the feature itself.
+                    150
+                }
+            }
+        } catch {
+            print("Updating the layer failed: \(error.localizedDescription)")
+        }
+        
+    }
+    
+    
+    
+    func filterPoiLabels(feature: Feature) {
+        let style = mapView.mapboxMap.style
+        
+        do {
+            try style.updateLayer(withId: "traffic-signal-high", type: SymbolLayer.self) { (layer: inout SymbolLayer) throws in
+                
+                let existedFilter = layer.filter
+                let newFilter = Exp(.lt) {
+                    Exp(.distance) {
+                        GeoJSONObject.feature(feature)
+                    }
+                    150
+                }
+                
+                combineFilter = Exp(.all) {
+                    existedFilter!
+                    newFilter
+                }
+                
+                layer.filter = combineFilter
+                //layer.filter = newFilter
+            }
+        } catch {
+            print("Updating the layer failed: \(error.localizedDescription)")
+        }
+        print(combineFilter)
+        
+    }
+}
+
+extension CustomTrainMapViewController: GestureManagerDelegate {
+    func gestureManager(_ gestureManager: GestureManager, didBegin gestureType: GestureType) {
+        
+    }
+    
+    func gestureManager(_ gestureManager: GestureManager, didEnd gestureType: GestureType, willAnimate: Bool) {
+        
+    }
+    
+    func gestureManager(_ gestureManager: GestureManager, didEndAnimatingFor gestureType: GestureType) {
+        print("\(gestureType) didEnd")
+        if (gestureType == .pan) {
+            try? mapView.mapboxMap.style.addImage(UIImage(named: "live_camera_small")!,
+                                                 id: "cameralive",
+                                                 stretchX: [],
+                                                 stretchY: [])
+            try? mapView.mapboxMap.style.addImage(UIImage(named: "youtube_small")!,
+                                                 id: "camerayoutube",
+                                                 stretchX: [],
+                                                 stretchY: [])
+            
+            let expression = Exp(.switchCase) { // Switching on a value
+                Exp(.gte) {
+                    Exp(.get) { "point" }
+                    3
+                }
+                "camerayoutube"
+                "cameralive"
+            }
+            
+            if let data = try? JSONEncoder().encode(expression.self),
+               let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) {
+                try! mapView.mapboxMap.style.setLayerProperty(for: "yjlayer",
+                                                              property: "icon-image",
+                                                              value: jsonObject)
+            }
+            
+            let expression2 = Exp(.switchCase) { // Switching on a value
+                Exp(.gte) {
+                    Exp(.get) { "point" }
+                    3
+                }
+                "#A52A2A"
+                "#8B0000"
+            }
+            
+            if let data2 = try? JSONEncoder().encode(expression2.self),
+               let jsonObject2 = try? JSONSerialization.jsonObject(with: data2, options: []) {
+                try! mapView.mapboxMap.style.setLayerProperty(for: "yjlayer",
+                                                              property: "text-color",
+                                                              value: jsonObject2)
+            }
+        }
     }
 }
