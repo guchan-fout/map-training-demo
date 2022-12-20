@@ -38,6 +38,7 @@ class ClusterViewController: UIViewController {
         
         let image_crown = UIImage(named: "star")!
         try! style.addImage(image_crown, id: "crown")
+        
         let url = Bundle.main.url(forResource: "Fire_Hydrants", withExtension: "geojson")!
         
         // Create a GeoJSONSource using the previously specified URL.
@@ -51,16 +52,25 @@ class ClusterViewController: UIViewController {
         // here to get each point's feature, and check any of them are true, then the cluster's new parameter's value will be true
         let clusterProp: [String: Expression] = ["hasLowFlow": Exp(.any) {Exp(.lte){Exp(.get) { "FLOW" }; 100.0}}]
         
+        let clusterProp1: [String: Expression] = ["hasLowFlow": Exp(.eq){Exp(.get) { "FLOW" }}]
         
-        let clusterPropOKcase: [String: Expression] = ["sum": Exp(.sum) {Exp(.get) { "FLOW" }}]
-        
-        let clusterPropNGcase1: [String: Expression] = ["hasLowFlow": Exp(.sum) { 10; 20}]
-                                                
-        let clusterPropNGcase2: [String: Expression] = ["sum": Exp(.sum) { 10
-                                                                       20}]
+        let clusterProp2: [String: Expression] = ["hasLowFlow": Exp(.all) { Exp(.get) { "FLOW" }}]
         
         
-        source.clusterProperties = clusterPropOKcase
+        
+        
+        let expCafe = Exp(.all) {Exp(.eq){Exp(.get) { "Category" }; "coffee"}}
+        //let clusterPropCafe: [String: Expression] = ["isAllCafe": expCafe]
+        
+        let expBar = Exp(.all) {Exp(.eq){Exp(.get) { "Category" }; "bar"}}
+        //let clusterPropBar: [String: Expression] = ["isAllBar": expBar]
+        
+        
+        let combiExp = ["isAllCafe": expCafe,"isAllBar": expBar]
+        
+        source.clusterProperties = combiExp
+        
+        
         
         let sourceID = "fire-hydrant-source"
         
@@ -139,10 +149,11 @@ class ClusterViewController: UIViewController {
         numberLayer.filter = Exp(.has) { "point_count" }
         
         numberLayer.textSize = .constant(12)
+        numberLayer.textColor = .constant(StyleColor(.lightGray))
         
         let iconExp =  Exp(.switchCase) { // Switching on a value
             Exp(.eq) { // Evaluates if conditions are equal
-                Exp(.get) { "hasLowFlow" }
+                Exp(.get) { "isAllBar" }
                 true
             }
             "crown"
@@ -151,11 +162,15 @@ class ClusterViewController: UIViewController {
         numberLayer.textField = .expression(Exp(.get) { "point_count" })
         
         numberLayer.iconImage = .expression(iconExp)
+        
         return numberLayer
     }
     
     @objc func handleTap(gestureRecognizer: UITapGestureRecognizer) {
         let point = gestureRecognizer.location(in: mapView)
+        
+        
+        
         
         // Look for features at the tap location within the clustered and
         // unclustered layers.
@@ -168,16 +183,70 @@ class ClusterViewController: UIViewController {
                 // Check whether the feature has values for `ASSETNUM` and `LOCATIONDETAIL`. These properties
                 // come from the fire hydrant dataset and indicate that the selected feature is not clustered.
                 if let selectedFeatureProperties = queriedFeatures.first?.feature.properties,
-                   case let .string(featureInformation) = selectedFeatureProperties["ASSETNUM"],
+                   case let .number(featureInformation) = selectedFeatureProperties["FLOW"],
                    case let .string(location) = selectedFeatureProperties["LOCATIONDETAIL"] {
                     self?.showAlert(withTitle: "Hydrant \(featureInformation)", and: "\(location)")
                     // If the feature is a cluster, it will have `point_count` and `cluster_id` properties. These are assigned
                     // when the cluster is created.
-                } else if let selectedFeatureProperties = queriedFeatures.first?.feature.properties,
-                          case let .number(pointCount) = selectedFeatureProperties["point_count"],
-                          case let .number(clusterId) = selectedFeatureProperties["cluster_id"] {
-                    // If the tap landed on a cluster, pass the cluster ID and point count to the alert.
-                    print(selectedFeatureProperties)
+                } else if let selectedFeature = queriedFeatures.first?.feature,
+                          case let .number(pointCount) = selectedFeature.properties?["point_count"],
+                          case let .number(clusterId) = selectedFeature.properties?["cluster_id"] {
+                    
+                    do {
+                        try self?.mapView.mapboxMap.style.updateLayer(withId: "clustered-circle-layer", type: CircleLayer.self, update: { (layer: inout CircleLayer) in
+                            
+                            // change clicked cluster's color
+                            let unclickedColor = "#FFFAFA"
+                            let clickedColor = "#7CFC00"
+                            
+                            let expColor = Exp(.switchCase){
+                                Exp(.eq) {
+                                    Exp(.get) {"cluster_id"}
+                                    clusterId
+                                }
+                                clickedColor
+                                unclickedColor
+                            }
+                            layer.circleColor = .expression(expColor)
+                            
+                            // change clicked cluster's cycle size
+                            
+                            let unclickedRadius = 25
+                            let clickedRadius = 40
+                            
+                            let expCircle = Exp(.switchCase){
+                                Exp(.eq) {
+                                    Exp(.get) {"cluster_id"}
+                                    clusterId
+                                }
+                                clickedRadius
+                                unclickedRadius
+                            }
+                            layer.circleRadius = .expression(expCircle)
+                           
+                        })
+                    } catch {
+                        print("Updating the layer clustered-circle-layer failed: \(error.localizedDescription)")
+                    }
+                    
+                    self?.mapView.mapboxMap.queryFeatureExtension(for: "fire-hydrant-source", feature: selectedFeature, extension: "supercluster", extensionField: "leaves") {
+                        result in
+                        switch result {
+                        case .success(let features):
+                            let feas = features.features
+                            
+                            for f in feas ?? [] {
+                                print(f)
+                            }
+                            print(selectedFeature)
+                            
+                            //completion(.success(features))
+                        case .failure(let error):
+                            //completion(.failure(error))
+                            print(error)
+                        }
+                    }
+                    
                     self?.showAlert(withTitle: "Cluster ID \(Int(clusterId))", and: "There are \(Int(pointCount)) points in this cluster")
                 }
             case .failure(let error):
